@@ -1,8 +1,7 @@
 import { html, css, LitElement } from 'lit-element';
-import { until } from 'lit-html/directives/until';
 import { curry } from './curry'
 
-import './dev-feed-article.js';
+import './dev-article.js';
 
 const handleAsJson = response => response.json();
 
@@ -14,7 +13,7 @@ const sub = (x, y) => x - y
 
 const flip = f => (y, x, ...rest) => f(x, y, ...rest)
 
-const mapPropCompare = curry((comparator, f, prop, x, y) => comparator(f(y[prop]), f(x[prop])))
+const mapPropCompare = curry((f, g, prop, x, y) => f(g(y[prop]), g(x[prop])))
 
 const mapPropGt = mapPropCompare(sub)
 
@@ -23,6 +22,10 @@ const mapPropLt = mapPropCompare(flip(sub))
 const propGt = mapPropGt(identity)
 
 export default class DevFeed extends LitElement {
+  static get is() {
+    return 'dev-feed';
+  }
+
   static get styles() {
     return css`
       [hidden] {
@@ -38,7 +41,7 @@ export default class DevFeed extends LitElement {
         padding: 25px;
         position: relative;
 
-        --dev-feed-article-max-width: 604px;
+        --dev-article-max-width: 604px;
       }
 
       ul {
@@ -48,7 +51,7 @@ export default class DevFeed extends LitElement {
       }
 
       #loading-content {
-        max-width: var(--dev-feed-article-max-width);
+        max-width: var(--dev-article-max-width);
       }
 `;
   }
@@ -142,10 +145,10 @@ export default class DevFeed extends LitElement {
   postTemplate(post) {
     return html`
       <li>
-        <dev-feed-article
+        <dev-article
             .article="${post}"
             ?show-description="${this.showDescriptions}"
-        ></dev-feed-article>
+        ></dev-article>
       </li>`;
   }
 
@@ -163,8 +166,8 @@ export default class DevFeed extends LitElement {
     if (!apiEndpoint) return
     this.loading = true;
     return fetch(apiEndpoint)
-        .then(handleAsJson)
-        .then(this.assignPosts)
+      .then(handleAsJson)
+      .then(this.assignPosts)
   }
 
 }

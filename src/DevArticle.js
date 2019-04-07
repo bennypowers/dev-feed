@@ -1,16 +1,22 @@
 import { html, css, LitElement } from 'lit-element';
-import { formatWithOptions, formatDistanceWithOptions, parseISO } from 'date-fns/fp'
+import formatWithOptions from 'date-fns/fp/formatWithOptions'
+import formatDistanceWithOptions from 'date-fns/fp/formatDistanceWithOptions'
+import parseISO from 'date-fns/fp/parseISO'
 
 const compose = (f, g) => x => f(g(x));
 
-const formatDate = compose(formatWithOptions({awareOfUnicodeTokens: true}, 'MMM d'), parseISO)
-const formatHuman = compose(formatDistanceWithOptions({addSuffix: true}, new Date()), parseISO)
+const formatDate = compose(formatWithOptions({ awareOfUnicodeTokens: true }, 'MMM d'), parseISO)
+const formatHuman = compose(formatDistanceWithOptions({ addSuffix: true }, new Date()), parseISO)
 
 const tagTemplate = tag => html`
   <li><a href="https://dev.to/t/${tag}" rel="noopener nofollow">#${tag}</a></li>
 `
 
-export default class DevFeed extends LitElement {
+export default class DevArticle extends LitElement {
+  static get is() {
+    return 'dev-article'
+  }
+
   static get properties() {
     return {
       article: { type: Object },
@@ -34,15 +40,15 @@ export default class DevFeed extends LitElement {
         transition-property: opacity;
         transition-timing-function: ease-in;
         width: 100%;
-        max-width: var(--dev-feed-article-max-width);
+        max-width: var(--dev-article-max-width);
 
-        --dev-feed-article-avatar-size: 48px;
-        --dev-feed-article-padding: 12px;
+        --dev-article-avatar-size: 48px;
+        --dev-article-padding: 12px;
       }
 
       article {
         display: grid;
-        grid-template-columns: calc(var(--dev-feed-article-avatar-size) + (2 * var(--dev-feed-article-padding))) auto;
+        grid-template-columns: calc(var(--dev-article-avatar-size) + (2 * var(--dev-article-padding))) auto;
         grid-template-areas:
           'figure figure figure'
           'avatar metadata metadata'
@@ -57,7 +63,7 @@ export default class DevFeed extends LitElement {
       }
 
       figcaption {
-        padding: 0 var(--dev-feed-article-padding);
+        padding: 0 var(--dev-article-padding);
       }
 
       #tags a,
@@ -112,12 +118,12 @@ export default class DevFeed extends LitElement {
         border-radius: 100%;
         justify-self: center;
         overflow: hidden;
-        height: var(--dev-feed-article-avatar-size);
-        width: var(--dev-feed-article-avatar-size);
+        height: var(--dev-article-avatar-size);
+        width: var(--dev-article-avatar-size);
       }
 
       #avatar img {
-        width: var(--dev-feed-article-avatar-size);
+        width: var(--dev-article-avatar-size);
       }
 
       #relative-time {
@@ -143,7 +149,7 @@ export default class DevFeed extends LitElement {
         color: var(--theme-secondary-color, hsl(0, 0%, 40%));
         font-size: 15px;
         grid-area: count;
-        padding: var(--dev-feed-article-padding);
+        padding: var(--dev-article-padding);
       }
 
       #positive-reactions img {

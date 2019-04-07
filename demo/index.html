@@ -51,7 +51,7 @@
     import DevFeed from '../src/DevFeed.js';
     import '../src/dev-feed.js';
 
-    const vars = new Proxy({
+    const properties = new Proxy({
       showDescriptions: false,
       sort: 'popularity',
       username: 'bennypowers'
@@ -66,7 +66,7 @@
     const compose = (f, g) => x => f(g(x))
 
     const set = curry(function _set(prop, value) {
-      vars[prop] = value;
+      properties[prop] = value;
     });
 
     const propPathOr = curry(function _curry(or, path, o) {
@@ -84,7 +84,7 @@
     const onSortByChange =
       compose(set('sort'), propPathOr('popularity', ['target', 'value']))
 
-    const update = ({sort, showDescriptions, username} = vars) => render(html`
+    const update = ({sort, showDescriptions, username} = properties) => render(html`
       <header>
         <h1>Megillah</h1>
       </header>
