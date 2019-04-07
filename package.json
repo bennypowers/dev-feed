@@ -1,0 +1,20 @@
+{
+  "name": "dev-feed",
+  "version": "0.0.0",
+  "description": "Webcomponent dev-feed following open-wc recommendations",
+  "author": "dev-feed",
+  "homepage": "https://github.com/open-wc/open-wc/",
+  "license": "MIT",
+  "repository": "https://github.com/open-wc/open-wc/",
+  "scripts": {
+    "start": "owc-dev-server --open demo"
+  },
+  "dependencies": {
+    "date-fns": "^2.0.0-alpha.27",
+    "lit-element": "^2.0.1",
+    "lit-html": "^1.0.0"
+  },
+  "devDependencies": {
+    "owc-dev-server": "^0.3.0"
+  }
+}

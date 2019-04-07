@@ -1,0 +1,170 @@
+import { html, css, LitElement } from 'lit-element';
+import { until } from 'lit-html/directives/until';
+import { curry } from './curry'
+
+import './dev-feed-article.js';
+
+const handleAsJson = response => response.json();
+
+const parseAsTimestamp = s => new Date(s).getTime()
+
+const identity = x => x
+
+const sub = (x, y) => x - y
+
+const flip = f => (y, x, ...rest) => f(x, y, ...rest)
+
+const mapPropCompare = curry((comparator, f, prop, x, y) => comparator(f(y[prop]), f(x[prop])))
+
+const mapPropGt = mapPropCompare(sub)
+
+const mapPropLt = mapPropCompare(flip(sub))
+
+const propGt = mapPropGt(identity)
+
+export default class DevFeed extends LitElement {
+  static get styles() {
+    return css`
+      [hidden] {
+        display: none !important;
+      }
+
+      :host {
+        display: block;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+        font-size: 18px;
+        margin: 15px;
+        color: hsl(0, 0%, 3.9%);
+        padding: 25px;
+        position: relative;
+
+        --dev-feed-article-max-width: 604px;
+      }
+
+      ul {
+        list-style-type: none;
+        margin: 0;
+        padding: 0;
+      }
+
+      #loading-content {
+        max-width: var(--dev-feed-article-max-width);
+      }
+`;
+  }
+
+  static get properties() {
+    return {
+      sort: { type: String, reflect: true },
+      posts: { type: Array },
+      user: { type: Object },
+      username: { type: String },
+      loading: { type: Boolean },
+      showDescriptions: { type: Boolean, attribute: 'show-descriptions' }
+    }
+  }
+
+  get apiEndpoint() {
+    const { username } = this;
+    if (!username) return null;
+    const API_ENDPOINT = new URL('api/articles', 'https://dev.to')
+          API_ENDPOINT.search = new URLSearchParams({ username });
+    return API_ENDPOINT
+  }
+
+  constructor() {
+    super();
+    this.posts = [];
+    this.sort = 'popularity';
+    this.assignPosts = this.assignPosts.bind(this);
+    this.postTemplate = this.postTemplate.bind(this);
+  }
+
+  render() {
+    const { loading, posts, postTemplate, sort } = this;
+    const sorter = (
+        sort === 'popularity' ? propGt('positive_reactions_count')
+      : sort === 'date' ? mapPropGt(parseAsTimestamp, 'published_at')
+      : sort === 'date-asc' ? mapPropLt(parseAsTimestamp, 'published_at')
+      : identity
+    );
+
+    return html`
+      <svg id="loading-content" viewBox="0 0 609 476" xmlns="http://www.w3.org/2000/svg" ?hidden="${!loading}">
+        <defs>
+          <rect id="a" x="1" y="1" width="604" height="471.017" rx="3"/>
+          <filter x="-.3%" y="-.4%" width="101.2%" height="101.5%" filterUnits="objectBoundingBox" id="b">
+            <feMorphology radius=".5" operator="dilate" in="SourceAlpha" result="shadowSpreadOuter1"/>
+            <feOffset dx="3" dy="3" in="shadowSpreadOuter1" result="shadowOffsetOuter1"/>
+            <feComposite in="shadowOffsetOuter1" in2="SourceAlpha" operator="out" result="shadowOffsetOuter1"/>
+            <feColorMatrix values="0 0 0 0 0.729 0 0 0 0 0.729 0 0 0 0 0.729 0 0 0 1 0" in="shadowOffsetOuter1"/>
+          </filter>
+          <rect id="e" x="1" y="1" width="604" height="471.017" rx="3"/>
+          <filter x="-.3%" y="-.4%" width="101.2%" height="101.5%" filterUnits="objectBoundingBox" id="d">
+            <feMorphology radius=".5" operator="dilate" in="SourceAlpha" result="shadowSpreadOuter1"/>
+            <feOffset dx="3" dy="3" in="shadowSpreadOuter1" result="shadowOffsetOuter1"/>
+            <feComposite in="shadowOffsetOuter1" in2="SourceAlpha" operator="out" result="shadowOffsetOuter1"/>
+            <feColorMatrix values="0 0 0 0 0.729 0 0 0 0 0.729 0 0 0 0 0.729 0 0 0 1 0" in="shadowOffsetOuter1"/>
+          </filter>
+        </defs>
+        <g fill="none" fill-rule="evenodd">
+          <mask id="c" fill="#fff">
+            <use xlink:href="#a"/>
+          </mask>
+          <use fill="#000" filter="url(#b)" xlink:href="#a"/>
+          <use stroke-opacity=".5" stroke="#BABABA" fill="#FFF" xlink:href="#a"/>
+          <g mask="url(#c)">
+            <use fill="#000" filter="url(#d)" xlink:href="#e"/>
+            <use stroke-opacity=".5" stroke="#BABABA" fill="#FFF" xlink:href="#e"/>
+          </g>
+          <path fill="#BABABA" mask="url(#c)" d="M1 1h604v253.667H1z"/>
+          <rect fill="#BABABA" mask="url(#c)" x="15" y="276" width="536" height="34" rx="3"/>
+          <rect fill="#BABABA" mask="url(#c)" x="15" y="325" width="388" height="34" rx="3"/>
+          <rect fill="#BABABA" mask="url(#c)" x="81" y="380" width="292" height="16" rx="3"/>
+          <rect fill="#BABABA" mask="url(#c)" x="81" y="405" width="128" height="16" rx="3"/>
+          <rect fill="#BABABA" mask="url(#c)" x="216" y="405" width="96" height="16" rx="3"/>
+          <rect fill="#BABABA" mask="url(#c)" x="319" y="405" width="128" height="16" rx="3"/>
+          <rect fill="#BABABA" mask="url(#c)" x="454" y="405" width="47" height="16" rx="3"/>
+          <rect fill="#BABABA" mask="url(#c)" x="46" y="437" width="35" height="16" rx="3"/>
+          <circle fill="#BABABA" mask="url(#c)" cx="38" cy="400" r="24"/>
+          <circle fill="#BABABA" mask="url(#c)" cx="25" cy="445" r="10"/>
+        </g>
+      </svg>
+
+      <ul id="posts" ?hidden="${loading}">
+        ${posts
+          .sort(sorter)
+          .map(postTemplate)}
+      </ul>
+    `;
+  }
+
+  postTemplate(post) {
+    return html`
+      <li>
+        <dev-feed-article
+            .article="${post}"
+            ?show-description="${this.showDescriptions}"
+        ></dev-feed-article>
+      </li>`;
+  }
+
+  async updated(changed) {
+    if (changed.has('username')) this.fetchPosts();
+  }
+
+  assignPosts(posts) {
+    this.posts = posts || [];
+    this.loading = false;
+  }
+
+  async fetchPosts() {
+    const { apiEndpoint } = this;
+    if (!apiEndpoint) return
+    this.loading = true;
+    return fetch(apiEndpoint)
+        .then(handleAsJson)
+        .then(this.assignPosts)
+  }
+
+}
