@@ -1,3 +1,5 @@
+import { debounce } from './debounce';
+
 import { html, css, LitElement } from 'lit-element';
 import { curry } from './curry'
 
@@ -70,9 +72,10 @@ export default class DevFeed extends LitElement {
   get apiEndpoint() {
     const { username } = this;
     if (!username) return null;
-    const API_ENDPOINT = new URL('api/articles', 'https://dev.to')
-          API_ENDPOINT.search = new URLSearchParams({ username });
-    return API_ENDPOINT
+    const search = new URLSearchParams({ username });
+    const API_ENDPOINT = new URL('api/articles', 'https://dev.to');
+          API_ENDPOINT.search = search;
+    return API_ENDPOINT;
   }
 
   constructor() {
@@ -81,6 +84,7 @@ export default class DevFeed extends LitElement {
     this.sort = 'popularity';
     this.assignPosts = this.assignPosts.bind(this);
     this.postTemplate = this.postTemplate.bind(this);
+    this.fetchPosts = debounce(this.fetchPosts.bind(this), 500);
   }
 
   render() {

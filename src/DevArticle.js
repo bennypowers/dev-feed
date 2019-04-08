@@ -158,10 +158,6 @@ export default class DevArticle extends LitElement {
         margin-right: 7px;
       }
 
-      #positive-reactions abbr {
-        text-decoration: none;
-      }
-
       #actions {
         display: flex;
         grid-area: actions;
@@ -188,17 +184,12 @@ export default class DevArticle extends LitElement {
       title,
       type_of: typeOf,
       url,
-      user
+      user: {
+        name,
+        profile_image_90: avatar,
+        username,
+      }
     } = this.article;
-
-    const {
-      github_username: github,
-      name,
-      profile_image_90: avatar,
-      twitter_username: twitter,
-      username,
-      website_url,
-    } = user || {}
 
     return html`
       <article aria-labelledby="title">
@@ -232,9 +223,9 @@ export default class DevArticle extends LitElement {
         </section>
 
         <span id="positive-reactions">
-          <abbr title="Number of Positive Reactions">
-            <img src="https://practicaldev-herokuapp-com.freetls.fastly.net/assets/reactions-stack-4bb9c1e4b3e71b7aa135d6f9a5ef29a6494141da882edd4fa971a77abe13dbe7.png" role="presentation"/>
-          </abbr>
+          <img src="https://practicaldev-herokuapp-com.freetls.fastly.net/assets/reactions-stack-4bb9c1e4b3e71b7aa135d6f9a5ef29a6494141da882edd4fa971a77abe13dbe7.png"
+              alt="Circled heart on a stack of similar circles"
+              title="Number of Positive Reactions"/>
           ${positiveReactionsCount}
         </span>
 
