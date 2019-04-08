@@ -179,17 +179,18 @@ export default class DevArticle extends LitElement {
       cover_image: coverImage,
       description,
       positive_reactions_count: positiveReactionsCount,
-      published_at: publishedAt,
-      tag_list: tagList,
+      published_at: publishedAt = `${new Date()}`,
+      tag_list: tagList = [],
       title,
-      type_of: typeOf,
       url,
-      user: {
-        name,
-        profile_image_90: avatar,
-        username,
-      }
-    } = this.article;
+      user,
+    } = this.article || {};
+
+    const {
+      name,
+      profile_image_90: avatar,
+      username,
+    } = user || {};
 
     return html`
       <article aria-labelledby="title">

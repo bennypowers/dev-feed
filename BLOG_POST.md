@@ -1,3 +1,11 @@
+---
+title: Embed a Dev.to User Feed with Web Components
+published: false
+description: Let's build a web component to embed a dev.to feed in a page.
+cover_image: https://thepracticaldev.s3.amazonaws.com/i/vrp6alld6f4hbzycarfi.png
+tags: showdev, webcomponents, html, javascript
+---
+
 Dev.to user [Andrew Healey](https://dev.to/healeycodes) published a lovely article last week showing how to use the dev.to API to embed posts in your page. His work inspired me to build a (surprise!) web component which would make that even easier. Let's build a dev.to web component!
 
 ## Overview
@@ -5,17 +13,17 @@ Our component will have two parts:
 1. `<dev-feed>`, a list component
 1. `<dev-article>`, an article component
 
-The main component, `<dev-feed>` will be responsible for fetching and sorting the articles, and `<dev-article>` will be responsible for displaying each article.
+The main component, `<dev-feed>` will be responsible for fetching and sorting the articles, and `<dev-article>` will be responsible for displaying each post.
 
-So let's start with the container, and work our way down to the details of the article.
+We'll start by building with the container, and work our way down to the details of the article display.
 
 ## Step 1: Scaffolding
 Let's use [open-wc](https://open-wc.org)'s tools to get a head start on our component:
 
 1. run `npm init @open-wc`
-  1. choose `Scaffold a new project`
-  1. choose `Lit Element Web Component`
-  1. enter the name `dev-feed`
+1. choose `Scaffold a new project`
+1. choose `Lit Element Web Component`
+1. enter the name `dev-feed`
 1. open your editor `atom -a dev-feed`
 
 You'll see two files under `src`:
@@ -25,22 +33,24 @@ You'll see two files under `src`:
 - DevFeed.js
 ```
 
-The first, in dash-case, is the file which users will import in order to register the custom element to their page. The second, in PascalCase, contains the element class, extending from `LitElement`. If you're not entirely clear on what I mean by those things, check out my post on [lit-element](https://dev.to/bennypowers/lets-build-web-components-part-5-litelement-906). It's cool, I'll wait. Good? alright...
+The first, in dash-case, is the file which users will import in order to register the custom element to their page. The second, in PascalCase, contains the element class, extending from `LitElement`. If you're not entirely clear on what I mean by those things, check out my post on [lit-element](https://dev.to/bennypowers/lets-build-web-components-part-5-litelement-906). It's cool, I'll wait. You good? alright...
 
-You'll also see a demo folder with an index.html inside. As we write our component, you can run the owc-dev-server on that file to see how your component looks.
+You'll also see a demo folder with an index.html inside. As we write our component, you can run the owc-dev-server on that file to see how your component looks. Open WC's generator already set that up for us, so we can just run.
 
 ```
 npm start
 ```
 
-We're going to practice a little README-driven-development, or demo-driven-development. Meaning, we'll decide our element's external API and write that into our demo, then work on bringing the code up to our standards. Let's use the JavaScript Proxy and lit-html to hack together a simple purpose-built reactive renderer
+We're going to practice a little README-driven-development, or demo-driven-development. Meaning, we'll first decide our element's external API, writing that into our demo; then we'll work on bringing the code up to our standards. Let's use the built-in [Proxy](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Proxy) constructor and lit-html to hack together a simple purpose-built reactive renderer for our demo, like a kind of chibi-storybook.
 
 ```js
 const properties = new Proxy({
+  // initial values
   showDescriptions: false,
   sort: 'popularity',
   username: 'bennypowers'
 }, {
+  /** Render the demo when a value is set */
   set(obj, prop, value) {
     obj[prop] = value
     update();
@@ -49,7 +59,7 @@ const properties = new Proxy({
 });
 ```
 
-This proxy holds a mapping of our element's props, and it will call our `update` function any time one of our values is set.
+This proxy holds a model of our element's properties, and it will call an `update` function any time one of our values is set. That `update` function will in turn call lit-html's `render` function to efficiently update the DOM.
 
 ```js
 const update = ({ showDescriptions, sort, username } = properties) => render(html`
@@ -73,7 +83,7 @@ const update = ({ showDescriptions, sort, username } = properties) => render(htm
 `, document.body);
 ```
 
-Here we provide a few controls to set our component's properties. The event handlers each grab the relevant value and set it on `properties`, which triggers the render. Nice 😎.
+Here we provide a few controls to set our component's properties. The event handlers ([see repo for source](https://github.com/bennypowers/dev-feed/blob/ee96d3e3cb2e1ed52baa5e33eba8ac2da4fd34b2/demo/index.html#L96)) each grab the relevant value and set it on `properties`, which triggers the render via the proxy. Nice 😎.
 
 ## Implementing our Feed Element
 Now that our demo is wired up, it's time to set up our feed element's internal logic and template. We'll start with a simple implementation and work up to the final product, refreshing our demo app as we go.
@@ -85,7 +95,7 @@ static get properties() {
   return {
     loading: { type: Boolean },
     posts: { type: Array },
-    showDescriptions: { type: Boolean, attribute: 'show-descriptions' }
+    showDescriptions: { type: Boolean, attribute: 'show-descriptions' },
     sort: { type: String, reflect: true },
     username: { type: String },
   }
@@ -100,7 +110,7 @@ constructor() {
 
 Note the `attribute` specified for `showDescriptions`, that's because HTML attributes are always lowercased, so here we explicitly link the dash-case attribute with the camelCase property. We also set some defaults in the constructor, especially for the `posts` property, which will be our private list of articles fetched from dev.to.
 
-Next, let's set up the feed components's template. Compared to the article it's markup is quite simple:
+Next, let's set up the feed components's template. Compared to the article, it has quite simple markup:
 
 ```js
 render() {
@@ -184,16 +194,17 @@ assignPosts(posts) {
 }
 
 async fetchPosts() {
-  const { apiEndpoint } = this;
+  const handleAsJson = response => response.json();
+  const { apiEndpoint, assignPosts } = this;
   if (!apiEndpoint) return;
   this.loading = true;
   return fetch(apiEndpoint)
     .then(handleAsJson)
-    .then(this.assignPosts);
+    .then(assignPosts);
 }
 ```
 
-We also need to bind `assignPosts` and `postTemplate` in the constructor so that we can destructure them and pass them first-class:
+We also need to bind `assignPosts` and `postTemplate` in the constructor so that we can destructure them and [pass them around first-class](https://developer.mozilla.org/en-US/docs/Glossary/First-class_Function). If we didn't do that, `postTemplate` would bind its `this` reference to the posts array, and `assignPosts` would bind to the fetch promise; and that would just be plain silly.
 
 ```js
 this.postTemplate = this.postTemplate.bind(this);
@@ -218,7 +229,7 @@ constructor() {
 
 If we would reload our demo page now, we wouldn't see anything, because the `<dev-article>` component hasn't been defined. But, if we inspected our element's shadow root, we'd see several `<dev-article>` elements, each one with its own `article` DOM property.
 
-![Screenshot from Firefox Dev Tools Showing the article DOM property of a dev-article element]()
+![Screenshot from Firefox Dev Tools Showing the article DOM property of a dev-article element](https://thepracticaldev.s3.amazonaws.com/i/nl0kwkys80m61dtebmfr.png)
 
 Next we'll get to work laying out each article according to the design on dev.to.
 
@@ -302,3 +313,34 @@ So this is pretty straightforward semantic HTML, but there are a few goodies to 
 ## Final Code
 
 So here's our component, running on stackblitz.
+
+{% stackblitz dev-to-element %}
+
+You can use `<dev-feed>` on your page today!
+
+```html
+<script src="https://unpkg.com/dev-feed/dev-feed.js?module"></script>
+<dev-feed username="bennypowers"></dev-feed>
+```
+
+Or install with npm and build with @pika/web
+
+```
+npm i -S dev-feed
+npx @pika/web
+```
+
+```html
+<script src="/web_modules/dev-feed.js"></script>
+<dev-feed username="bennypowers"></dev-feed>
+```
+
+## Ideas for the Future
+
+This was put together pretty quickly, so there's plenty of room to grow. The element's API surface could use some polish (perhaps around showing descriptions or other metadata like user social links), so if you have any ideas please comment, or open issues or PRs.
+
+Another thing which is rife for reconsideration is how this element gets its data. There's no good reason for the work of fetching posts from the API to be a part of the element class. It should rightfully be it's own library. Hey @healeycodes, what do you think about joining forces on some modern devto.js library that abstracts over `fetch` and returns a promise of posts?
+
+## Thanks for Reading
+Thanks to @westbrook for his input on this post and to @healeycodes for getting the ball rolling.
+Hope you enjoyed the post and please use `<dev-feed>` on your web sites!
