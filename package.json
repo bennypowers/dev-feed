@@ -1,6 +1,6 @@
 {
   "name": "dev-feed",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "web component that displays a feed from dev.to",
   "module": "dev-feed.js",
   "author": "Benny Powers <web@bennypowers.com>",
