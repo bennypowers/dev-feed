@@ -1,11 +1,12 @@
 {
   "name": "dev-feed",
-  "version": "0.0.0",
-  "description": "Webcomponent dev-feed following open-wc recommendations",
-  "author": "dev-feed",
-  "homepage": "https://github.com/open-wc/open-wc/",
+  "version": "1.0.0",
+  "description": "web component that displays a feed from dev.to",
+  "module": "dev-feed.js",
+  "author": "Benny Powers <web@bennypowers.com>",
+  "homepage": "https://github.com/bennypowers/dev-feed/",
   "license": "MIT",
-  "repository": "https://github.com/open-wc/open-wc/",
+  "repository": "https://github.com/bennypowers/dev-feed/",
   "scripts": {
     "start": "owc-dev-server --open demo"
   },
