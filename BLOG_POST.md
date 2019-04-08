@@ -312,9 +312,9 @@ So this is pretty straightforward semantic HTML, but there are a few goodies to 
 
 ## Final Code
 
-So here's our component, running on stackblitz.
+So here's our component, running on glitch.
 
-{% stackblitz dev-feed-element %}
+{% glitch dev-feed-element app %}
 
 You can use `<dev-feed>` on your page today!
 
