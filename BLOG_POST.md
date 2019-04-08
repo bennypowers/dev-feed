@@ -1,12 +1,16 @@
 ---
 title: Embed a Dev.to User Feed with Web Components
-published: false
+published: true
 description: Let's build a web component to embed a dev.to feed in a page.
 cover_image: https://thepracticaldev.s3.amazonaws.com/i/vrp6alld6f4hbzycarfi.png
 tags: showdev, webcomponents, html, javascript
 ---
 
-Dev.to user [Andrew Healey](https://dev.to/healeycodes) published a lovely article last week showing how to use the dev.to API to embed posts in your page. His work inspired me to build a (surprise!) web component which would make that even easier. Let's build a dev.to web component!
+Dev.to user @healeycodes published a lovely article last week showing how to use the dev.to API to embed posts in your page.
+
+{% link https://dev.to/healeycodes/embed-your-latest-dev-posts-anywhere-lj9 %}
+
+His work inspired me to build a (surprise!) web component which would make that even easier. Let's build a dev.to web component!
 
 ## Overview
 Our component will have two parts:
