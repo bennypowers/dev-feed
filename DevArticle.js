@@ -32,7 +32,7 @@ export default class DevArticle extends LitElement {
         border: 1px solid hsla(0, 0%, 72.9%, 0.5);
         border-radius: 3px;
         box-shadow: hsl(0, 0%, 72.9%) 3px 3px 0 0;
-        margin: 10px 0 0 0;
+        margin: var(--dev-article-margin, 10px 0 0 0);
         padding: 0;
         position: relative;
         transition-delay: 0s;

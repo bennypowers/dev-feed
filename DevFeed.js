@@ -38,10 +38,10 @@ export default class DevFeed extends LitElement {
         display: block;
         font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
         font-size: 18px;
-        margin: 15px;
+        margin: var(--dev-feed-margin, 15px);
         color: hsl(0, 0%, 3.9%);
-        padding: 25px;
-        position: relative;
+        padding: var(--dev-feed-padding, 25px);
+        position: relativei;
 
         --dev-article-max-width: 604px;
       }
