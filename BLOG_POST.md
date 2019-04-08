@@ -314,7 +314,7 @@ So this is pretty straightforward semantic HTML, but there are a few goodies to 
 
 So here's our component, running on stackblitz.
 
-{% stackblitz dev-to-element %}
+{% stackblitz dev-feed-element %}
 
 You can use `<dev-feed>` on your page today!
 

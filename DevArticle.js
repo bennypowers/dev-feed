@@ -1,7 +1,7 @@
 import { html, css, LitElement } from 'lit-element';
-import formatWithOptions from 'date-fns/fp/formatWithOptions'
-import formatDistanceWithOptions from 'date-fns/fp/formatDistanceWithOptions'
-import parseISO from 'date-fns/fp/parseISO'
+import formatWithOptions from 'date-fns/esm/fp/formatWithOptions'
+import formatDistanceWithOptions from 'date-fns/esm/fp/formatDistanceWithOptions'
+import parseISO from 'date-fns/esm/fp/parseISO'
 
 const compose = (f, g) => x => f(g(x));
 
