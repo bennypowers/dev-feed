@@ -11,6 +11,10 @@
       font-family: 'Open Sans', Helvetica, Arial, sans-serif;
     }
 
+    h1 img { 
+      height: 24px
+    }
+
     body {
       display: grid;
       grid-template-areas:
@@ -99,36 +103,50 @@
       compose(set('showDescriptions'), propPathOr(false, ['target', 'checked']))
     const onSortByChange =
       compose(set('sort'), propPathOr('popularity', ['target', 'value']))
+    
+    const main = document.querySelector('main');
+    const footer = document.querySelector('footer');
 
-    const update = ({sort, showDescriptions, username} = properties) => render(html`
-      <header>
-        <h1>&lt;dev-feed&gt;</h1>
-      </header>
-      <main>
+    function update({sort, showDescriptions, username} = properties) {
+      const mainTemplate = html`
         <dev-feed id="component"
             username="${username}"
             sort="${sort}"
             ?show-descriptions="${showDescriptions}"
         ></dev-feed>
-      </main>
-      <footer>
-        <h2>Properties</h2>
-        <label for="username"><code>username</code></label>
-        <input id="username" @keyup="${onUsernameChange}" value="${username}"/>
-        <label for="show-descriptions"><code>show-descriptions</code></label>
-        <input id="show-descriptions" type="checkbox" @change="${onShowDescriptionsChange}" ?checked="${showDescriptions}"/>
-        <label for="sort"><code>sort</code></label>
-        <select id="sort" @change="${onSortByChange}" value="${sort}">
-          <option value="popularity">Popularity</option>
-          <option value="date">Date, Descending</option>
-          <option value="date-asc">Date, Ascending</option>
-        </select>
-      </footer>
-    `, document.body);
+      `;
+
+      const footerTemplate = html`
+        <footer>
+          <h2>Properties</h2>
+          <label for="username"><code>username</code></label>
+          <input id="username" @keyup="${onUsernameChange}" value="${username}"/>
+          <label for="show-descriptions"><code>show-descriptions</code></label>
+          <input id="show-descriptions" type="checkbox" @change="${onShowDescriptionsChange}" ?checked="${showDescriptions}"/>
+          <label for="sort"><code>sort</code></label>
+          <select id="sort" @change="${onSortByChange}" value="${sort}">
+            <option value="popularity">Popularity</option>
+            <option value="date">Date, Descending</option>
+            <option value="date-asc">Date, Ascending</option>
+          </select>
+        </footer>
+      `;
+
+      render(mainTemplate, document.querySelector('main'));
+      render(footerTemplate, document.querySelector('footer'));
+    }
 
     update();
   </script>
 </head>
 <body>
+  <header>
+    <h1>&lt;dev-feed&gt;</h1>
+    <a href="https://github.com/bennypowers/dev-feed">
+      <img src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png" alt="Github logo"/>
+    </a>
+  </header>
+  <main></main>
+  <footer></footer>
 </body>
 </html>
