@@ -117,19 +117,17 @@
       `;
 
       const footerTemplate = html`
-        <footer>
-          <h2>Properties</h2>
-          <label for="username"><code>username</code></label>
-          <input id="username" @keyup="${onUsernameChange}" value="${username}"/>
-          <label for="show-descriptions"><code>show-descriptions</code></label>
-          <input id="show-descriptions" type="checkbox" @change="${onShowDescriptionsChange}" ?checked="${showDescriptions}"/>
-          <label for="sort"><code>sort</code></label>
-          <select id="sort" @change="${onSortByChange}" value="${sort}">
-            <option value="popularity">Popularity</option>
-            <option value="date">Date, Descending</option>
-            <option value="date-asc">Date, Ascending</option>
-          </select>
-        </footer>
+        <h2>Properties</h2>
+        <label for="username"><code>username</code></label>
+        <input id="username" @keyup="${onUsernameChange}" value="${username}"/>
+        <label for="show-descriptions"><code>show-descriptions</code></label>
+        <input id="show-descriptions" type="checkbox" @change="${onShowDescriptionsChange}" ?checked="${showDescriptions}"/>
+        <label for="sort"><code>sort</code></label>
+        <select id="sort" @change="${onSortByChange}" value="${sort}">
+          <option value="popularity">Popularity</option>
+          <option value="date">Date, Descending</option>
+          <option value="date-asc">Date, Ascending</option>
+        </select>
       `;
 
       render(mainTemplate, document.querySelector('main'));
