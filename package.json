@@ -8,14 +8,60 @@
   "license": "MIT",
   "repository": "https://github.com/bennypowers/dev-feed/",
   "scripts": {
-    "start": "owc-dev-server --open demo"
+    "start": "es-dev-server --app-index demo/index.html --node-resolve --open --watch",
+    "lint:eslint": "eslint --ext .js,.html . --ignore-path .gitignore",
+    "format:eslint": "eslint --ext .js,.html . --fix --ignore-path .gitignore",
+    "lint": "npm run lint:eslint",
+    "format": "npm run format:eslint",
+    "test": "karma start --coverage",
+    "test:watch": "karma start --auto-watch=true --single-run=false",
+    "test:update-snapshots": "karma start --update-snapshots",
+    "test:prune-snapshots": "karma start --prune-snapshots",
+    "test:compatibility": "karma start --compatibility all --coverage",
+    "test:compatibility:watch": "karma start --compatibility all --auto-watch=true --single-run=false",
+    "test:bs": "karma start karma.bs.config.js --compatibility all --coverage",
+    "start:build": "cd dist && es-dev-server --open",
+    "build": "rimraf docs && rollup -c rollup.config.js"
   },
   "dependencies": {
-    "date-fns": "^2.0.0-alpha.27",
-    "lit-element": "^2.0.1",
-    "lit-html": "^1.0.0"
+    "date-fns": "^2.6.0",
+    "lit-element": "^2.2.1",
+    "lit-html": "^1.1.2"
   },
   "devDependencies": {
-    "owc-dev-server": "^0.3.0"
+    "@apollo-elements/eslint-config": "^1.1.0",
+    "@open-wc/eslint-config": "^1.0.0",
+    "@open-wc/prettier-config": "^0.1.10",
+    "@open-wc/testing": "^2.0.0",
+    "@open-wc/testing-karma": "^3.0.0",
+    "@open-wc/testing-karma-bs": "^1.0.0",
+    "eslint": "^6.1.0",
+    "eslint-config-google": "^0.14.0",
+    "eslint-plugin-html": "^6.0.0",
+    "eslint-plugin-json": "^2.0.1",
+    "eslint-plugin-no-loops": "^0.3.0",
+    "husky": "^1.0.0",
+    "lint-staged": "^8.0.0",
+    "sinon": "^7.5.0",
+    "webpack-merge": "^4.1.5",
+    "@open-wc/building-rollup": "^0.9.0",
+    "rimraf": "^2.6.3",
+    "rollup": "^1.15.4"
+  },
+  "eslintConfig": {
+    "extends": [
+      "@apollo-elements"
+    ]
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "*.js": [
+      "eslint --fix",
+      "git add"
+    ]
   }
 }

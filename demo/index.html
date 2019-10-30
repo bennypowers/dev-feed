@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>&lt;dev-feed&gt; Element</title>
+  <style>
+    html {
+      --megillah-header-height: 64px;
+      --megillah-footer-height: 320px;
+
+      font-family: 'Open Sans', Helvetica, Arial, sans-serif;
+    }
+
+    header img {
+      height: 24px
+    }
+
+    body {
+      display: grid;
+      grid-template-areas:
+        'header header'
+        'demo footer';
+      grid-template-rows: var(--megillah-header-height) auto;
+      grid-template-columns: 1fr 400px;
+      background: #fafafa;
+      max-height: 100vh;
+      height: 100vh;
+      overflow: scroll;
+    }
+
+    header {
+      grid-area: header;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: var(--megillah-header-height)
+    }
+
+    main {
+      grid-area: demo;
+      overflow: auto;
+      height: calc(100vh - var(--megillah-header-height));
+    }
+
+    footer {
+      align-items: center;
+      display: grid;
+      grid-area: footer;
+      grid-auto-rows: 40px;
+      grid-template-columns: max-content 200px;
+      box-shadow: 3px 3px 0 0 lightgray;
+      border: 1px solid lightgray;
+      border-radius: 3px;
+      padding: 20px;
+    }
+
+    footer h2 {
+      grid-column: 1/3;
+    }
+
+    footer label {
+      margin-right: 7px;
+    }
+
+    [type="checkbox"] {
+      justify-self: baseline;
+    }
+  </style>
+  <script type="module">
+    import { html, render } from 'lit-html';
+    import { curry } from './curry.js';
+    import '../dev-feed';
+
+    const properties = new Proxy({
+      showDescriptions: false,
+      sort: 'popularity',
+      username: 'bennypowers'
+    }, {
+      set(obj, prop, value) {
+        obj[prop] = value
+        update();
+        return true
+      }
+    })
+
+    const compose = (f, g) => x => f(g(x))
+
+    const set = curry(function _set(prop, value) {
+      properties[prop] = value;
+    });
+
+    const propPathOr = curry(function _curry(or, path, o) {
+      try {
+        return path.reduce((current, prop) => current[prop], o)
+      } catch(e) {
+        return or;
+      }
+    })
+
+    const onUsernameChange =
+      compose(set('username'), propPathOr('', ['target', 'value']))
+    const onShowDescriptionsChange =
+      compose(set('showDescriptions'), propPathOr(false, ['target', 'checked']))
+    const onSortByChange =
+      compose(set('sort'), propPathOr('popularity', ['target', 'value']))
+
+    const main = document.querySelector('main');
+    const footer = document.querySelector('footer');
+
+    function update({sort, showDescriptions, username} = properties) {
+      const mainTemplate = html`
+        <dev-feed id="component"
+            username="${username}"
+            sort="${sort}"
+            ?show-descriptions="${showDescriptions}"
+        ></dev-feed>
+      `;
+
+      const footerTemplate = html`
+        <h2>Properties</h2>
+        <label for="username"><code>username</code></label>
+        <input id="username" @keyup="${onUsernameChange}" value="${username}"/>
+        <label for="show-descriptions"><code>show-descriptions</code></label>
+        <input id="show-descriptions" type="checkbox" @change="${onShowDescriptionsChange}" ?checked="${showDescriptions}"/>
+        <label for="sort"><code>sort</code></label>
+        <select id="sort" @change="${onSortByChange}" value="${sort}">
+          <option value="popularity">Popularity</option>
+          <option value="date">Date, Descending</option>
+          <option value="date-asc">Date, Ascending</option>
+        </select>
+      `;
+
+      render(mainTemplate, document.querySelector('main'));
+      render(footerTemplate, document.querySelector('footer'));
+    }
+
+    update();
+  </script>
+</head>
+<body>
+  <header>
+    <h1>&lt;dev-feed&gt;</h1>
+    <a href="https://github.com/bennypowers/dev-feed">
+      <img src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png" alt="Github logo"/>
+    </a>
+  </header>
+  <main></main>
+  <footer></footer>
+</body>
+</html>

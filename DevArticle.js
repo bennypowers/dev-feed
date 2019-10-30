@@ -1,27 +1,57 @@
 import { html, css, LitElement } from 'lit-element';
-import formatWithOptions from 'date-fns/esm/fp/formatWithOptions'
-import formatDistanceWithOptions from 'date-fns/esm/fp/formatDistanceWithOptions'
-import parseISO from 'date-fns/esm/fp/parseISO'
+import formatWithOptions from 'date-fns/esm/fp/formatWithOptions';
+import formatDistanceWithOptions from 'date-fns/esm/fp/formatDistanceWithOptions';
+import parseISO from 'date-fns/esm/fp/parseISO';
+
+/**
+ * dev.to article
+ * @typedef {Object} DevPost
+ * @property {string} cover_image
+ * @property {string} description
+ * @property {number} positive_reactions_count
+ * @property {string} published_at
+ * @property {string[]} tag_list
+ * @property {string} title
+ * @property {string} url
+ * @property {string} user
+ */
 
 const compose = (f, g) => x => f(g(x));
 
-const formatDate = compose(formatWithOptions({ awareOfUnicodeTokens: true }, 'MMM d'), parseISO)
-const formatHuman = compose(formatDistanceWithOptions({ addSuffix: true }, new Date()), parseISO)
+const formatDate = compose(formatWithOptions({ awareOfUnicodeTokens: true }, 'MMM d'), parseISO);
+const formatHuman = compose(formatDistanceWithOptions({ addSuffix: true }, new Date()), parseISO);
 
 const tagTemplate = tag => html`
   <li><a href="https://dev.to/t/${tag}" rel="noopener nofollow">#${tag}</a></li>
-`
+`;
 
+/**
+ * Web component to display a dev.to article
+ * @element
+ * @cssprop --theme-secondary-color - default `hsl(0, 0%, 40%)`
+ * @cssprop --dev-article-avatar-size - default `48px`
+ * @cssprop --dev-article-padding - default `12px`
+ * @cssprop --dev-article-max-width
+ */
 export default class DevArticle extends LitElement {
   static get is() {
-    return 'dev-article'
+    return 'dev-article';
   }
 
   static get properties() {
     return {
+      /**
+       * @type {DevPost}
+       */
       article: { type: Object },
-      showDescription: { type: Boolean, attribute: 'show-description', reflect: true }
-    }
+
+      /**
+       * Whether or not to display the article description
+       * @type {boolean}
+       * @attr show-description
+       */
+      showDescription: { type: Boolean, attribute: 'show-description', reflect: true },
+    };
   }
 
   static get styles() {
@@ -32,7 +62,7 @@ export default class DevArticle extends LitElement {
         border: 1px solid hsla(0, 0%, 72.9%, 0.5);
         border-radius: 3px;
         box-shadow: hsl(0, 0%, 72.9%) 3px 3px 0 0;
-        margin: var(--dev-article-margin, 10px 0 0 0);
+        margin: 10px 0 0 0;
         padding: 0;
         position: relative;
         transition-delay: 0s;
@@ -174,6 +204,7 @@ export default class DevArticle extends LitElement {
       }
 `;
   }
+
   render() {
     const {
       cover_image: coverImage,
