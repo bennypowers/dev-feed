@@ -44,7 +44,7 @@
     "lint-staged": "^13.1.0",
     "sinon": "^7.5.0",
     "webpack-merge": "^4.1.5",
-    "@open-wc/building-rollup": "^0.9.0",
+    "@open-wc/building-rollup": "^2.2.1",
     "rimraf": "^2.6.3",
     "rollup": "^1.15.4"
   },
